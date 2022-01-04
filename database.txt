@@ -1,0 +1,6 @@
+create table guiasGeneradas(
+id int AUTO_INCREMENT not null,
+numPedido varchar(10),
+guiaPdf varchar(40),
+PRIMARY KEY(id)
+)ENGINE=InnoDB;
