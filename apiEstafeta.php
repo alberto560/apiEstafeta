@@ -9,7 +9,7 @@ require 'libs/PHPMailer/src/SMTP.php';
 
     class estafeta extends BD{
         function getDataOrder($parametros)
-        {          
+        {
           $sentencia = $this->ConsultaPreparada("SELECT
                       p.ID as order_id,
                       p.post_date,
@@ -31,30 +31,30 @@ require 'libs/PHPMailer/src/SMTP.php';
                         max( CASE WHEN pm.meta_key = '_shipping_state' and p.ID = pm.post_id THEN pm.meta_value END ) as _shipping_state,
                         max( CASE WHEN pm.meta_key = '_shipping_postcode' and p.ID = pm.post_id THEN pm.meta_value END ) as _shipping_postcode,
                         max( CASE WHEN pm.meta_key = '_order_total' and p.ID = pm.post_id THEN pm.meta_value END ) as order_total,
-                        max( CASE WHEN pm.meta_key = '_order_tax' and p.ID = pm.post_id THEN pm.meta_value END ) as order_tax,                        
+                        max( CASE WHEN pm.meta_key = '_order_tax' and p.ID = pm.post_id THEN pm.meta_value END ) as order_tax,
                         max( CASE WHEN pm.meta_key = '_paid_date' and p.ID = pm.post_id THEN pm.meta_value END ) as paid_date,
-                        
+
                         (SELECT GROUP_CONCAT(oim.meta_value SEPARATOR '|') FROM wp_woocommerce_order_items oi join wp_woocommerce_order_itemmeta oim on oi.order_item_id = oim.order_item_id WHERE oi.order_id = ? and oi.order_item_type = 'line_item' and oim.meta_key = '_qty') AS articulos,
-                        
+
                         (SELECT GROUP_CONCAT(oim.meta_value SEPARATOR '|') FROM wp_woocommerce_order_items oi join wp_woocommerce_order_itemmeta oim on oi.order_item_id = oim.order_item_id WHERE oi.order_id = ? and oi.order_item_type = 'line_item' and oim.meta_key = '_line_total') AS costoComodin,
-                        
+
                         (SELECT GROUP_CONCAT(oim.meta_value SEPARATOR '|') FROM wp_woocommerce_order_items oi join wp_woocommerce_order_itemmeta oim on oi.order_item_id = oim.order_item_id WHERE oi.order_id = ? and oi.order_item_type = 'line_item' and oim.meta_key = '_product_id') AS id_productos,
-                        
+
                         ( select group_concat( order_item_name separator '|' ) from wp_woocommerce_order_items where order_id = p.ID and order_item_type = 'line_item') as order_items
                   from
-                      wp_posts p 
+                      wp_posts p
                       join wp_postmeta pm on p.ID = pm.post_id
-                      join wp_woocommerce_order_items oi on p.ID = oi.order_id 
+                      join wp_woocommerce_order_items oi on p.ID = oi.order_id
                       join wp_woocommerce_order_itemmeta oim on oi.order_item_id = oim.order_item_id
                   where
                       post_type = 'shop_order' and p.ID = ?
                   group by
                       p.ID", array($parametros->orderNum,$parametros->orderNum,$parametros->orderNum,$parametros->orderNum));
           return json_encode($sentencia);
-          
+
         }
-        
-        
+
+
         function getDataProducto($parametros){
             /*
             $sentencia2 = $this->ConsultaPreparada("SELECT ID FROM wp_posts WHERE post_title = ? limit 1 ", array($parametros->name));
@@ -63,12 +63,12 @@ require 'libs/PHPMailer/src/SMTP.php';
             $d = json_decode($dataa);
             $idProducto = $d->ID;
             */
-            $sentencia = $this->ConsultaPreparada("SELECT post_id, 
-                            max(case when meta_key = '_weight' then meta_value end) as weight, 
-		                    max(case when meta_key = '_length' then meta_value end) as lenght, 
-                            max(case when meta_key = '_width' then meta_value end) as widht, 
-                            max(case when meta_key = '_height' then meta_value end) as height 
-                            from wp_postmeta where post_id = ? 
+            $sentencia = $this->ConsultaPreparada("SELECT post_id,
+                            max(case when meta_key = '_weight' then meta_value end) as weight,
+		                    max(case when meta_key = '_length' then meta_value end) as lenght,
+                            max(case when meta_key = '_width' then meta_value end) as widht,
+                            max(case when meta_key = '_height' then meta_value end) as height
+                            from wp_postmeta where post_id = ?
                             group by post_id order by post_id", array($parametros->idProd));
             return json_encode($sentencia);
         }
@@ -78,7 +78,7 @@ require 'libs/PHPMailer/src/SMTP.php';
         {
 
           $numPedido = implode(array($parametros->numPedido));
-          
+
           $contenido_del_envio = implode(array($parametros->contenido_del_envio));
           $forma_de_entrega = implode(array($parametros->forma_de_entrega));
           $numero_de_etiquetas = implode(array($parametros->numero_de_etiquetas));
@@ -93,8 +93,8 @@ require 'libs/PHPMailer/src/SMTP.php';
           $descripcion_del_contenido = implode(array($parametros->descripcion_del_contenido));
           $centro_de_costos = implode(array($parametros->centro_de_costos));
           $pais_de_envio = implode(array($parametros->pais_de_envio));
-          $referencia = implode(array($parametros->referencia));          
-          $cuadrante_de_impresion = implode(array($parametros->cuadrante_de_impresion));          
+          $referencia = implode(array($parametros->referencia));
+          $cuadrante_de_impresion = implode(array($parametros->cuadrante_de_impresion));
 
           $direccion_destinatario = implode(array($parametros->direccion_destinatario));
           $direccion_destinatarioDos = implode(array($parametros->direccion_destinatarioDos));
@@ -107,8 +107,8 @@ require 'libs/PHPMailer/src/SMTP.php';
           $numero_cliente_destinatario = implode(array($parametros->numero_cliente_destinatario));
           $celular_destinatario = implode(array($parametros->celular_destinatario));
           $telefono_destinatario = implode(array($parametros->telefono_destinatario));
-          
-          
+
+
          /*
           $ESTAFETA_CREATE_LABEL_URL = 'https://labelqa.estafeta.com/EstafetaLabel20/services/EstafetaLabelWS?wsdl';
           $ESTAFETA_CREATE_LABEL_CUSTNUM = '0000000';
@@ -116,13 +116,13 @@ require 'libs/PHPMailer/src/SMTP.php';
           $ESTAFETA_CREATE_LABEL_PASS = 'lAbeL_K_11';
           $ESTAFETA_CREATE_LABEL_ID = 28;
           */
-          
+
           $ESTAFETA_CREATE_LABEL_URL = 'https://label.estafeta.com/EstafetaLabel20/services/EstafetaLabelWS?wsdl';
           $ESTAFETA_CREATE_LABEL_CUSTNUM = '5513140';
           $ESTAFETA_CREATE_LABEL_USER = '5513140';
           $ESTAFETA_CREATE_LABEL_PASS = 'PAmqVdV2o';
           $ESTAFETA_CREATE_LABEL_ID = 'MR';
-          
+
           $i = (Object) [
 
           'content'                  => $contenido_del_envio, /* Contenido del envío Char(1 a 25) (SI) */
@@ -267,7 +267,7 @@ require 'libs/PHPMailer/src/SMTP.php';
                           </est:createLabel>
                        </soapenv:Body>
                     </soapenv:Envelope>';
-                    
+
                   $headers = array(
                                 "Content-type: text/xml;charset=\"utf-8\"",
                                 "Accept: text/xml",
@@ -275,17 +275,17 @@ require 'libs/PHPMailer/src/SMTP.php';
                                 "SOAPAction:http://tempuri.org/createLabel",
                                 "Pragma: no-cache",
                                 "Content-length: ".strlen($xml),
-                            );                                
-                                  
+                            );
+
                   // PHP cURL
                   try {
                       $ch = curl_init();
                   } catch (Exception $e) {
                       echo 'Excepción capturada: ',  $e->getMessage(), "\n";
-                  }  
-                  
+                  }
+
                   try{
-                    
+
                       curl_setopt_array($ch, Array(
                           CURLOPT_URL            => $ESTAFETA_CREATE_LABEL_URL,
                           CURLOPT_POST           => true,
@@ -296,7 +296,7 @@ require 'libs/PHPMailer/src/SMTP.php';
                           CURLOPT_RETURNTRANSFER => TRUE,
                           CURLOPT_ENCODING       => 'UTF-8'
                       ));
-                      
+
                   }catch(Exception $e){
                       echo 'Excepción capturada: ',  $e->getMessage(), "\n";
                   }
@@ -306,21 +306,21 @@ require 'libs/PHPMailer/src/SMTP.php';
                       //echo $response;
                   } catch (Exception $e) {
                       echo 'Excepción capturada: ',  $e->getMessage(), "\n";
-                  }                  
-                  
-                  $error    = curl_error($ch);                  
+                  }
+
+                  $error    = curl_error($ch);
                   curl_close($ch);
 
                   libxml_use_internal_errors(true);
                   $sxe = simplexml_load_string($response);
-                  
+
                   if ($sxe === false) {
                       echo "Failed loading XML\n";
                       foreach(libxml_get_errors() as $error) {
                           echo "\t", $error->message;
                       }
                   }
-                  
+
                   $xml_obj = self::xml_to_array($response, 1, 'resultDescription')['soapenv:Envelope']['soapenv:Body']['multiRef'];
 
                   $labelPDF = $xml_obj[0]['labelPDF']['value'];
@@ -328,28 +328,28 @@ require 'libs/PHPMailer/src/SMTP.php';
                   foreach ($xml_obj as $key => $i) {
                       if($key > 0){
                           if($i['resultDescription']['value'] != 'OK'){
-                              $numero_de_guia = $i['resultDescription']['value'];                  
+                              $numero_de_guia = $i['resultDescription']['value'];
                           }
                       }
                   }
 
-                  $nombre_del_PDF = $numPedido.'-'.$numero_de_guia.".pdf";                    
-                  
+                  $nombre_del_PDF = $numPedido.'-'.$numero_de_guia.".pdf";
+
                   $pdf_decoded = base64_decode($labelPDF,true);
                   try{
                     $pdf = fopen('../apiEstafeta/guiasPDF/'.$nombre_del_PDF,'w') or die("Unable to open file!");
 
                   }catch (Exception $e) {
                       echo 'Excepción capturada: ',  $e->getMessage(), "\n";
-                  }                   
+                  }
                   fwrite ($pdf,$pdf_decoded);
-                  fclose ($pdf);        
+                  fclose ($pdf);
                   chmod('../apiEstafeta/guiasPDF/'.$nombre_del_PDF, 0777);
                   return json_encode($nombre_del_PDF);;
                   //$array_data = json_encode($xml);
                   //return $array_data;
-        }        
-        
+        }
+
         function sendGuiaMail($parametros){
             $email = implode(array($parametros->email));
 			$guia = implode(array($parametros->numGuia));
@@ -397,7 +397,7 @@ require 'libs/PHPMailer/src/SMTP.php';
 													<tr>
 														<td valign="top" style="padding: 48px 48px 32px;">
 															<div id="body_content_inner" style="color: #636363; font-family: "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif; font-size: 14px; line-height: 150%; text-align: left;">
-<center>															
+<center>
 <p style="margin: 0 0 16px;">Tu pedido ya se encuentra en paqueteria solo ingresa tu número de guia para rastrearlo.</p>
 <center>
 <center>
@@ -413,13 +413,13 @@ require 'libs/PHPMailer/src/SMTP.php';
 															</div>
 														</td>
 													</tr>
-													<tr>													
+													<tr>
 														<td>
 															<div id="body_content_inner" style="color: #636363; font-family: "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif; font-size: 14px; line-height: 150%; text-align: left;">
-																<center>															
+																<center>
 																<p style="margin: 0 0 16px;">Nota: Los datos de rastreo pueden tardar unas horas en visualizarse.</p>
-																<center>																
-															</div>														
+																<center>
+															</div>
 														</td>
 													</tr>
 												</table>
@@ -458,19 +458,19 @@ require 'libs/PHPMailer/src/SMTP.php';
 		</div>
 	</body>
 </html>';
-                    
+
             $asunto = 'Envío de Numero de Guía';
-				
+
 			try {
 			    //Server settings
 			    $mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
 				$mail->isSMTP();                                            // Send using SMTP
-				$mail->Host       = 'mail.hokins.com';                    // Set the SMTP server to send through
+				$mail->Host       = 'mail.com';                    // Set the SMTP server to send through
 				$mail->SMTPAuth   = true;                                   // Enable SMTP authentication
-				$mail->Username   = 'dev@hokins.com';                     // SMTP username
-				$mail->Password   = 'devHokins21';                               // SMTP password
+				$mail->Username   = 'user.com';                     // SMTP username
+				$mail->Password   = 'pass';                               // SMTP password
 				$mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;         // Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
-				$mail->Port       = 587;                                    // TCP port to connect to, use 465 for `PHPMailer::ENCRYPTION_SMTPS` above 
+				$mail->Port       = 587;                                    // TCP port to connect to, use 465 for `PHPMailer::ENCRYPTION_SMTPS` above
 
 				//Recipients
 				$mail->setFrom('pedidos@hokins.com');
@@ -490,7 +490,7 @@ require 'libs/PHPMailer/src/SMTP.php';
 				    return 0;
 				}
         }
-        
+
         public static function xml_to_array($contents, $get_attributes=1, $priority = 'tag') {
             if(!$contents) return array();
 
@@ -613,7 +613,7 @@ require 'libs/PHPMailer/src/SMTP.php';
 
             return($xml_array);
         }
-        
+
         //========== RASTREO DE GUIAS
         function rastrearGuia($parametros){
             $numeroGuia = implode(array($parametros->numeroGuia));
@@ -654,7 +654,7 @@ require 'libs/PHPMailer/src/SMTP.php';
             $SearchConfiguration -> includeCustomerInfo = 1;
             $SearchConfiguration -> historyConfiguration = $HistoryConfiguration;
             $SearchConfiguration -> filterType= $Filter;
-            
+
             // Se instancía al método del web service para consulta de guías
             $result = $client->ExecuteQuery(array(
               'suscriberId'=>397,
@@ -668,21 +668,21 @@ require 'libs/PHPMailer/src/SMTP.php';
             //print_r ($result);
             return json_encode($result);
         }
-        
+
         //===================================================================================
         //===================================================================================
         function saveDataGuia($parametros){
             $sentencia = $this->InsertarRegistrosPreparada("INSERT INTO guiasGeneradas (numPedido,guiaPdf) VALUES (?,?)", array($parametros->numPedido,$parametros->nombrePdf));
             return json_encode($sentencia);
         }
-        
+
         function getDataGuias($parametros){
             $sentencia = $this->ConsultaPreparada("SELECT guiaPdf from guiasGeneradas WHERE numPedido=?", array($parametros->numPedido));
             return json_encode($sentencia);
         }
-        
-        
-        
+
+
+
         /*
 SELECT
                       p.ID as order_id,
@@ -709,7 +709,7 @@ SELECT
                         max( CASE WHEN pm.meta_key = '_paid_date' and p.ID = pm.post_id THEN pm.meta_value END ) as paid_date,
                         ( select group_concat( order_item_name separator '|' ) from wp_woocommerce_order_items where order_id = p.ID and order_item_type = 'line_item') as order_items
                   from
-                      wp_posts p 
+                      wp_posts p
                       join wp_postmeta pm on p.ID = pm.post_id
                       join wp_woocommerce_order_items oi on p.ID = oi.order_id
                   where
@@ -717,10 +717,10 @@ SELECT
                   group by
                       p.ID
                       */
-                      
-                      
-                /* 
-                
+
+
+                /*
+
                 SELECT
                       p.ID as order_id,
                       p.post_date,
@@ -747,36 +747,18 @@ SELECT
                         max( CASE WHEN oim.meta_key = 'articulos' and oi.order_item_id = oim.order_item_id THEN oim.meta_value END ) as articulos,
                         ( select group_concat( order_item_name separator '|' ) from wp_woocommerce_order_items where order_id = p.ID and order_item_type = 'line_item') as order_items
                   from
-                      wp_posts p 
+                      wp_posts p
                       join wp_postmeta pm on p.ID = pm.post_id
-                      join wp_woocommerce_order_items oi on p.ID = oi.order_id 
+                      join wp_woocommerce_order_items oi on p.ID = oi.order_id
                       join wp_woocommerce_order_itemmeta oim on oi.order_item_id = oim.order_item_id
                   where
                       post_type = 'shop_order' and p.ID = ?
                   group by
                       p.ID
                 */
-                
-        
-        
-   
+
+
+
+
   }
 ?>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

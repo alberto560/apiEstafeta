@@ -5,9 +5,9 @@ class BD {
     //public $cadena1 = "idCliente00XX";
     //public $cadena;
     //public $cadena = "mysql:host=65.99.252.170;dbname=bitnami_wordpress";
-    public $cadena = "mysql:host=localhost;dbname=hokins_wp";//3306
-    public $user = "hokins_wp";
-    public $password = "9MSDqW6RWm2v";
+    public $cadena = "mysql:host=localhost;dbname=bd";//3306
+    public $user = "bd_user";
+    public $password = "bd_pass";
     public $conn;
     public $depuracion = true;
 
@@ -108,7 +108,7 @@ class BD {
             // echo var_dump($sentencia->errorInfo());
                 return FALSE;
         }
-            
+
     }
 
 }
