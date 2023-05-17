@@ -118,9 +118,9 @@ require 'libs/PHPMailer/src/SMTP.php';
           */
 
           $ESTAFETA_CREATE_LABEL_URL = 'https://label.estafeta.com/EstafetaLabel20/services/EstafetaLabelWS?wsdl';
-          $ESTAFETA_CREATE_LABEL_CUSTNUM = '5513140';
-          $ESTAFETA_CREATE_LABEL_USER = '5513140';
-          $ESTAFETA_CREATE_LABEL_PASS = 'PAmqVdV2o';
+          $ESTAFETA_CREATE_LABEL_CUSTNUM = '';
+          $ESTAFETA_CREATE_LABEL_USER = '';
+          $ESTAFETA_CREATE_LABEL_PASS = '';
           $ESTAFETA_CREATE_LABEL_ID = 'MR';
 
           $i = (Object) [
@@ -657,9 +657,9 @@ require 'libs/PHPMailer/src/SMTP.php';
 
             // Se instancía al método del web service para consulta de guías
             $result = $client->ExecuteQuery(array(
-              'suscriberId'=>397,
-              'login'=>'5513140',
-              'password'=> 'PAmqVdV2o',
+              'suscriberId'=>,
+              'login'=>'',
+              'password'=> '',
               'searchType' => $SearchType,
               'searchConfiguration' => $SearchConfiguration
               )
