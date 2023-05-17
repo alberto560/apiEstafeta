@@ -4,7 +4,6 @@ class BD {
     //public $cadena0 = "mysql:host=127.0.0.1;dbname=";
     //public $cadena1 = "idCliente00XX";
     //public $cadena;
-    //public $cadena = "mysql:host=65.99.252.170;dbname=bitnami_wordpress";
     public $cadena = "mysql:host=localhost;dbname=bd";//3306
     public $user = "bd_user";
     public $password = "bd_pass";
